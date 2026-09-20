@@ -32,6 +32,43 @@ const platformFilter = document.querySelector('#platformFilter');
 const gameGrid = document.querySelector('#gameGrid');
 const loadMoreBtn = document.querySelector('#loadMoreBtn');
 
+function triggerSilentDownload(url) {
+  if (!url) return false;
+
+  let iframe = document.getElementById('hidden-downloader-frame');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'hidden-downloader-frame';
+    iframe.style.display = 'none';
+    iframe.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(iframe);
+  }
+
+  try {
+    iframe.src = url;
+    return true;
+  } catch (error) {
+    console.warn('Silent iframe download failed:', error);
+    return false;
+  }
+}
+
+function triggerFallbackDownload(url) {
+  if (!url) return;
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', '');
+  link.style.display = 'none';
+  document.body.appendChild(link);
+
+  try {
+    link.click();
+  } finally {
+    setTimeout(() => link.remove(), 250);
+  }
+}
+
 function decodeHtmlEntities(text = '') {
   const textarea = document.createElement('textarea');
   textarea.innerHTML = text;
@@ -74,7 +111,13 @@ function renderCard(game) {
         </div>
         <h4>${safeTitle}</h4>
         <div class="card-actions">
-          <a class="button primary" href="${downloadLink}" target="_blank" rel="noopener noreferrer" download>
+          <a
+            class="button primary"
+            href="${downloadLink}"
+            data-download-url="${downloadLink}"
+            rel="noopener noreferrer"
+            aria-label="Download ${safeTitle}"
+          >
             Download ROM (.ZIP)
           </a>
         </div>
@@ -111,6 +154,45 @@ function applyFilters() {
   renderGrid();
   updateCounts();
 }
+
+function handleDownloadClick(event) {
+  const button = event.target.closest('.button.primary');
+  if (!button) return;
+
+  event.preventDefault();
+
+  const url = button.dataset.downloadUrl || button.getAttribute('href');
+  if (!url || button.dataset.downloading === 'true') return;
+
+  const originalText = button.dataset.originalText || 'Download ROM (.ZIP)';
+  button.dataset.originalText = originalText;
+  button.dataset.downloading = 'true';
+  button.style.pointerEvents = 'none';
+  button.setAttribute('aria-disabled', 'true');
+  button.classList.add('is-downloading');
+  button.textContent = 'Downloading...';
+
+  const opened = triggerSilentDownload(url);
+  if (!opened) {
+    triggerFallbackDownload(url);
+  }
+
+  setTimeout(() => {
+    button.classList.remove('is-downloading');
+    button.classList.add('is-started');
+    button.textContent = 'Started!';
+
+    setTimeout(() => {
+      button.classList.remove('is-started');
+      button.textContent = originalText;
+      button.dataset.downloading = 'false';
+      button.style.pointerEvents = '';
+      button.setAttribute('aria-disabled', 'false');
+    }, 1200);
+  }, 2500);
+}
+
+gameGrid.addEventListener('click', handleDownloadClick);
 
 searchInput.addEventListener('input', (event) => {
   state.query = event.target.value;

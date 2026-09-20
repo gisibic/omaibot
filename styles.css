@@ -342,6 +342,15 @@ h1 {
   color: #fff;
 }
 
+.button.primary.is-downloading {
+  background: linear-gradient(135deg, #8c5ad0 0%, #7746c8 100%);
+  filter: saturate(1.08);
+}
+
+.button.primary.is-started {
+  background: linear-gradient(135deg, #34a853 0%, #1d7f3a 100%);
+}
+
 .button.secondary {
   background: linear-gradient(135deg, #111111 0%, #343434 100%);
   color: #fff;
