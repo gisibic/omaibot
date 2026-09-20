@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Retro ROM Vault</title>
+    <meta
+      name="description"
+      content="Retro ROM Vault - direct download archive for classic Game Boy and Game Boy Advance ROMs."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar panel">
+        <div class="brand" aria-label="Retro ROM Vault">
+          <div class="brand-mark">GB</div>
+          <div class="brand-copy">
+            <span class="eyebrow">POCKET ARCHIVE</span>
+            <h1>Retro ROM Vault</h1>
+          </div>
+        </div>
+
+        <div class="status-pill" aria-live="polite">
+          <span id="totalCount">[ 0 ROMs ]</span>
+        </div>
+      </header>
+
+      <section class="toolbar panel" aria-label="Search and filter games">
+        <div class="search-box">
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Search games..."
+            aria-label="Search games"
+          />
+        </div>
+
+        <div class="filter-box">
+          <select id="platformFilter" aria-label="Filter platform">
+            <option value="all">All Platforms</option>
+          </select>
+        </div>
+      </section>
+
+      <div class="results-header">
+        <h2>Game Library</h2>
+        <p><span id="resultCount">0</span> games found</p>
+      </div>
+
+      <main id="gameGrid" class="game-grid" aria-live="polite"></main>
+
+      <div class="load-more-wrap">
+        <button id="loadMoreBtn" class="button secondary" type="button">Load More</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
