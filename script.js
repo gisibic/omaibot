@@ -32,40 +32,18 @@ const platformFilter = document.querySelector('#platformFilter');
 const gameGrid = document.querySelector('#gameGrid');
 const loadMoreBtn = document.querySelector('#loadMoreBtn');
 
-function triggerSilentDownload(url) {
-  if (!url) return false;
-
-  let iframe = document.getElementById('hidden-downloader-frame');
-  if (!iframe) {
-    iframe = document.createElement('iframe');
-    iframe.id = 'hidden-downloader-frame';
-    iframe.style.display = 'none';
-    iframe.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(iframe);
-  }
-
-  try {
-    iframe.src = url;
-    return true;
-  } catch (error) {
-    console.warn('Silent iframe download failed:', error);
-    return false;
-  }
-}
-
-function triggerFallbackDownload(url) {
+function triggerDirectDownload(url) {
   if (!url) return;
 
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', '');
-  link.style.display = 'none';
-  document.body.appendChild(link);
-
   try {
+    window.location.assign(url);
+  } catch (error) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
     link.click();
-  } finally {
-    setTimeout(() => link.remove(), 250);
+    link.remove();
   }
 }
 
@@ -172,10 +150,7 @@ function handleDownloadClick(event) {
   button.classList.add('is-downloading');
   button.textContent = 'Downloading...';
 
-  const opened = triggerSilentDownload(url);
-  if (!opened) {
-    triggerFallbackDownload(url);
-  }
+  triggerDirectDownload(url);
 
   setTimeout(() => {
     button.classList.remove('is-downloading');
